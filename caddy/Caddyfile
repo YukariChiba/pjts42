@@ -1,0 +1,43 @@
+{
+    ocsp_stapling off
+}
+
+(tls-dn42) {
+    tls {
+        issuer acme https://acme.burble.dn42/v1/dn42/acme/directory {
+            trusted_roots /etc/caddy/dn42-root.crt
+        }
+    }
+}
+
+(tls-self) {
+    tls internal {
+        on_demand
+    }
+}
+
+http://localhost {
+    handle /health-check {
+        respond 200
+    }
+}
+
+mtf.pjts.dn42 {
+    import tls-self
+    reverse_proxy pjts-web-mtf:3000
+}
+
+rle.pjts.dn42 {
+    import tls-self
+    reverse_proxy pjts-web-rle:3000
+}
+
+fonts.pjts.dn42 {
+    import tls-self
+    reverse_proxy pjts-web-fonts:3000
+}
+
+mtf.dn42 {
+    import tls-self
+    reverse_proxy pjts-web-mtf:3000
+}

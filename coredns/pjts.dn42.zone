@@ -1,0 +1,15 @@
+$ORIGIN pjts.dn42.
+$TTL 3600
+
+@       IN SOA  pjts.dn42. admin.pjts.dn42. (
+                2026071201 ; serial
+                3600       ; refresh
+                1800       ; retry
+                86400      ; expire
+                3600       ; minimum ttl
+                )
+
+        IN NS   pjts.dn42.
+        IN AAAA fd42:706a:7473::1
+
+*       IN AAAA fd42:706a:7473::1

@@ -1,0 +1,17 @@
+pjts.dn42:53 {
+    errors
+    ready localhost:8181
+    file /config/pjts.dn42.zone
+}
+
+mtf.dn42:53 {
+    errors
+    ready localhost:8182
+    file /config/mtf.dn42.zone
+}
+
+0.0.0.0.3.7.4.7.a.6.0.7.2.4.d.f.ip6.arpa:53 {
+    errors
+    ready localhost:8183
+    file /config/pjts.dn42.rev.zone
+}

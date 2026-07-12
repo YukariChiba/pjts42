@@ -1,0 +1,15 @@
+$ORIGIN 0.0.0.0.3.7.4.7.a.6.0.7.2.4.d.f.ip6.arpa.
+$TTL 3600
+
+@                               IN SOA  pjts.dn42. admin.pjts.dn42. (
+                                        2026071201 ; serial
+                                        3600       ; refresh
+                                        1800       ; retry
+                                        86400      ; expire
+                                        3600       ; minimum ttl
+                                        )
+
+                                IN NS   pjts.dn42.
+
+1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR  pjts.dn42.
+f.f.f.f.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR  gw.pjts.dn42.

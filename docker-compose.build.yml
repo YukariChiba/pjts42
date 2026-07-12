@@ -1,0 +1,113 @@
+services:
+  pjts-caddy:
+    build:
+      context: ./caddy
+    container_name: pjts-caddy
+    restart: unless-stopped
+    networks:
+      network-pjts:
+        ipv6_address: fd42:706a:7473::1
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost/health-check || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  pjts-coredns:
+    build:
+      context: ./coredns
+    container_name: pjts-coredns
+    restart: unless-stopped
+    network_mode: "service:pjts-caddy"
+    depends_on:
+      pjts-caddy:
+        condition: service_started
+
+  pjts-web-mtf:
+    build:
+      context: ./web-mtf
+    container_name: pjts-web-mtf
+    restart: unless-stopped
+    networks:
+      - network-pjts
+    depends_on:
+      pjts-caddy:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:3000/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  pjts-web-rle:
+    build:
+      context: ./web-rle
+    container_name: pjts-web-rle
+    restart: unless-stopped
+    networks:
+      - network-pjts
+    depends_on:
+      pjts-caddy:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:3000/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # TODO: fix font build
+  # pjts-web-fonts:
+  #   build:
+  #     context: ./web-fonts
+  #   container_name: pjts-web-fonts
+  #   restart: unless-stopped
+  #   networks:
+  #     - network-pjts
+  #   depends_on:
+  #     pjts-caddy:
+  #       condition: service_started
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:3000/ || exit 1"]
+  #     interval: 30s
+  #     timeout: 5s
+  #     retries: 3
+  #     start_period: 30s
+
+  # use bird if need to use BGP/IGP
+  # pjts-bird:
+  #     build:
+  #       context: ./bird
+  #     container_name: pjts-bird
+  #     restart: unless-stopped
+  #     network_mode: "host"
+  #     volumes:
+  #       - ........
+  #     depends_on:
+  #       pjts-caddy:
+  #         condition: service_healthy
+  #       pjts-coredns:
+  #         condition: service_started
+  #       pjts-web-mtf:
+  #         condition: service_healthy
+  #       pjts-web-rle:
+  #         condition: service_healthy
+  #       pjts-web-fonts:
+  #         condition: service_healthy
+
+networks:
+  network-pjts:
+    name: network-pjts
+    enable_ipv6: true
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: docker-pjts
+    ipam:
+      config:
+        - subnet: fd42:706a:7473::/64
+          gateway: fd42:706a:7473::ffff
+        # TODO: really remove ipv4 from interface
+        - subnet: 169.254.0.0/24
+          gateway: 169.254.0.1
